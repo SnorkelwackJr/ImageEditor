@@ -22,7 +22,9 @@ public class ReadFromFile {
             String str = scanner.next();
 
             // Collect and set width, height, and maxRGB values
-            if (str == "P3") continue;
+            if (str.equals("P3")) {
+                continue;
+            }
             if (myImage.width == 0) {
                 myImage.width = Integer.parseInt(str);
                 continue;

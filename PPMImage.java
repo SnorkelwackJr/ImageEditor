@@ -16,6 +16,7 @@ public class PPMImage {
                     allRGB.get(i).rgb[1] = 255 - allRGB.get(i).rgb[1];
                     allRGB.get(i).rgb[2] = 255 - allRGB.get(i).rgb[2];
                 }
+                break;
             case "grayscale":
                 for (int i = 0; i < allRGB.size(); i++) {
                     int average = (allRGB.get(i).rgb[0] + allRGB.get(i).rgb[1] + allRGB.get(i).rgb[2])/3;
@@ -23,8 +24,9 @@ public class PPMImage {
                     allRGB.get(i).rgb[1] = average;
                     allRGB.get(i).rgb[2] = average;
                 }
+                break;
             case "emboss":
-                for (int i = 0; i < allRGB.size(); i++) {
+                for (int i = (allRGB.size() - 1); i >= 0; i--) {
                     // set top and left edge pixels to 128
                     if ((i < width) || (i % width == 0)) {
                         allRGB.get(i).rgb[0] = 128;
@@ -55,6 +57,7 @@ public class PPMImage {
                         allRGB.get(i).rgb[2] = v;
                     }
                 }
+                break;
             case "motionblur":
                 // check number in command line
                 int blurStrength = Integer.parseInt(blurVal);
@@ -68,19 +71,57 @@ public class PPMImage {
                     if ((i % width) != (width - 1)) {
                         int colorTotal = 0;
                         int pixels; // <-- pixels visited
-                        for (pixels = 0; pixels < (blurStrength - 1); pixels++) {
-                            if (((i + pixels) % width) == (width - 1)) break;
-                            colorTotal += ((allRGB.get(i + pixels).rgb[0] + allRGB.get(i + pixels).rgb[1] + allRGB.get(i + pixels).rgb[2])/3);
+                        for (pixels = 0; pixels < blurStrength; pixels++) {
+                            colorTotal += (allRGB.get(i + pixels).rgb[0]);
+                            if (((i + pixels) % width) == (width - 1)) {
+                                pixels++;
+                                break;
+                            }
                         }
                         int colorAvg = colorTotal/pixels;
                         allRGB.get(i).rgb[0] = colorAvg;
+
+                        colorTotal = 0;
+                        pixels = 0; // <-- pixels visited
+                        for (pixels = 0; pixels < blurStrength; pixels++) {
+                            colorTotal += (allRGB.get(i + pixels).rgb[1]);
+                            if (((i + pixels) % width) == (width - 1)) {
+                                pixels++;
+                                break;
+                            }
+                        }
+                        colorAvg = colorTotal/pixels;
                         allRGB.get(i).rgb[1] = colorAvg;
+
+                        colorTotal = 0;
+                        pixels = 0; // <-- pixels visited
+                        for (pixels = 0; pixels < blurStrength; pixels++) {
+                            colorTotal += (allRGB.get(i + pixels).rgb[2]);
+                            if (((i + pixels) % width) == (width - 1)) {
+                                pixels++;
+                                break;
+                            }
+                        }
+                        colorAvg = colorTotal/pixels;
                         allRGB.get(i).rgb[2] = colorAvg;
                     }
                 }
-
-            default:
-                // notify user of incorrect command
+                break;
         }
+    }
+
+    public String ToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("P3").append("\n");
+        sb.append(this.width).append("\n");
+        sb.append(this.height).append("\n");
+        sb.append(this.maxRGB).append("\n");
+        for (int i = 0; i < allRGB.size(); i++) {
+            sb.append(this.allRGB.get(i).rgb[0]).append(" ");
+            sb.append(this.allRGB.get(i).rgb[1]).append(" ");
+            sb.append(this.allRGB.get(i).rgb[2]).append("\n");
+        }
+
+        return sb.toString();
     }
 }

@@ -11,7 +11,7 @@ public class Pixel {
         return rgb;
     }
 
-    public String toString() {
+    public String ToString() {
         return rgb[0] + " " + rgb[1] + " " + rgb[2];
     }
 }
